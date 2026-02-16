@@ -39,8 +39,8 @@ class AccurateDenoise:
             }
         }
 
-    RETURN_TYPES = ("FLOAT", comfy.samplers.KSampler.SCHEDULERS)
-    RETURN_NAMES = ("denoise", "scheduler")
+    RETURN_TYPES = ("FLOAT", "MODEL", comfy.samplers.KSampler.SCHEDULERS)
+    RETURN_NAMES = ("denoise", "model", "scheduler")
     FUNCTION = "execute"
     CATEGORY = "sampling/custom_sampling/schedulers"
 
@@ -49,7 +49,7 @@ class AccurateDenoise:
         idx = find_sigma_index(sigmas, actual_denoise)
         denoise = 1.0 - (idx / len(sigmas))
         denoise = max(0.0, min(1.0, denoise))
-        return (denoise, scheduler)
+        return (denoise, model, scheduler)
 
 
 class AccurateDenoiseStep:
@@ -67,8 +67,8 @@ class AccurateDenoiseStep:
             }
         }
 
-    RETURN_TYPES = ("INT", "INT", comfy.samplers.KSampler.SCHEDULERS)
-    RETURN_NAMES = ("start_at_step", "steps", "scheduler")
+    RETURN_TYPES = ("INT", "INT", "MODEL", comfy.samplers.KSampler.SCHEDULERS)
+    RETURN_NAMES = ("start_at_step", "steps", "model", "scheduler")
     FUNCTION = "execute"
     CATEGORY = "sampling/custom_sampling/schedulers"
 
@@ -77,7 +77,7 @@ class AccurateDenoiseStep:
         idx = find_sigma_index(sigmas, actual_denoise)
         start_at_step = int(round(idx * steps / len(sigmas)))
         start_at_step = max(0, min(steps, start_at_step))
-        return (start_at_step, steps, scheduler)
+        return (start_at_step, steps, model, scheduler)
 
 
 class AccurateDenoiseInverse:
@@ -94,8 +94,8 @@ class AccurateDenoiseInverse:
             }
         }
 
-    RETURN_TYPES = ("FLOAT", comfy.samplers.KSampler.SCHEDULERS)
-    RETURN_NAMES = ("actual_denoise", "scheduler")
+    RETURN_TYPES = ("FLOAT", "MODEL", comfy.samplers.KSampler.SCHEDULERS)
+    RETURN_NAMES = ("actual_denoise", "model", "scheduler")
     FUNCTION = "execute"
     CATEGORY = "sampling/custom_sampling/schedulers"
 
@@ -109,7 +109,7 @@ class AccurateDenoiseInverse:
         sigmas, sigma0 = get_sigmas(model, scheduler)
         sigma_at_step = get_sigma_at_fraction(sigmas, step_fraction)
         actual_ratio = sigma_at_step / sigma0
-        return (actual_ratio, scheduler)
+        return (actual_ratio, model, scheduler)
 
 
 class AccurateDenoiseInverseStep:
@@ -124,8 +124,8 @@ class AccurateDenoiseInverseStep:
             }
         }
 
-    RETURN_TYPES = ("FLOAT", comfy.samplers.KSampler.SCHEDULERS)
-    RETURN_NAMES = ("actual_denoise", "scheduler")
+    RETURN_TYPES = ("FLOAT", "MODEL", comfy.samplers.KSampler.SCHEDULERS)
+    RETURN_NAMES = ("actual_denoise", "model", "scheduler")
     FUNCTION = "execute"
     CATEGORY = "sampling/custom_sampling/schedulers"
 
@@ -135,4 +135,4 @@ class AccurateDenoiseInverseStep:
         sigmas, sigma0 = get_sigmas(model, scheduler)
         sigma_at_step = get_sigma_at_fraction(sigmas, step_fraction)
         actual_ratio = sigma_at_step / sigma0
-        return (actual_ratio, scheduler)
+        return (actual_ratio, model, scheduler)
