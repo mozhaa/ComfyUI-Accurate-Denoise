@@ -7,13 +7,13 @@ def get_sigmas(model, scheduler):
     return sigmas, sigmas[0].item()
 
 
-def find_sigma_index(sigmas, target_sigma_ratio):
-    if target_sigma_ratio <= 0.0:
+def find_sigma_index(sigmas, actual_denoise):
+    if actual_denoise <= 0.0:
         return len(sigmas)
-    if target_sigma_ratio >= 1.0:
+    if actual_denoise >= 1.0:
         return 0
 
-    threshold = target_sigma_ratio * sigmas[0].item()
+    threshold = actual_denoise * sigmas[0].item()
     idx = (sigmas < threshold).nonzero()
     return idx[0, 0].item() if len(idx) > 0 else len(sigmas)
 
@@ -32,7 +32,7 @@ class AccurateDenoise:
             "required": {
                 "model": ("MODEL",),
                 "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
-                "target_sigma_ratio": (
+                "actual_denoise": (
                     "FLOAT",
                     {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001},
                 ),
@@ -44,9 +44,9 @@ class AccurateDenoise:
     FUNCTION = "execute"
     CATEGORY = "sampling/custom_sampling/schedulers"
 
-    def execute(self, model, scheduler, target_sigma_ratio):
+    def execute(self, model, scheduler, actual_denoise):
         sigmas, _ = get_sigmas(model, scheduler)
-        idx = find_sigma_index(sigmas, target_sigma_ratio)
+        idx = find_sigma_index(sigmas, actual_denoise)
         denoise = 1.0 - (idx / len(sigmas))
         denoise = max(0.0, min(1.0, denoise))
         return (denoise, scheduler)
@@ -59,7 +59,7 @@ class AccurateDenoiseStep:
             "required": {
                 "model": ("MODEL",),
                 "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
-                "target_sigma_ratio": (
+                "actual_denoise": (
                     "FLOAT",
                     {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001},
                 ),
@@ -72,9 +72,9 @@ class AccurateDenoiseStep:
     FUNCTION = "execute"
     CATEGORY = "sampling/custom_sampling/schedulers"
 
-    def execute(self, model, scheduler, target_sigma_ratio, steps):
+    def execute(self, model, scheduler, actual_denoise, steps):
         sigmas, _ = get_sigmas(model, scheduler)
-        idx = find_sigma_index(sigmas, target_sigma_ratio)
+        idx = find_sigma_index(sigmas, actual_denoise)
         start_at_step = int(round(idx * steps / len(sigmas)))
         start_at_step = max(0, min(steps, start_at_step))
         return (start_at_step, steps, scheduler)
@@ -95,7 +95,7 @@ class AccurateDenoiseInverse:
         }
 
     RETURN_TYPES = ("FLOAT", comfy.samplers.KSampler.SCHEDULERS)
-    RETURN_NAMES = ("target_sigma_ratio", "scheduler")
+    RETURN_NAMES = ("actual_denoise", "scheduler")
     FUNCTION = "execute"
     CATEGORY = "sampling/custom_sampling/schedulers"
 
@@ -125,7 +125,7 @@ class AccurateDenoiseInverseStep:
         }
 
     RETURN_TYPES = ("FLOAT", comfy.samplers.KSampler.SCHEDULERS)
-    RETURN_NAMES = ("target_sigma_ratio", "scheduler")
+    RETURN_NAMES = ("actual_denoise", "scheduler")
     FUNCTION = "execute"
     CATEGORY = "sampling/custom_sampling/schedulers"
 
