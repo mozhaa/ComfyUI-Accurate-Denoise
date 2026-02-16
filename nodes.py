@@ -25,7 +25,7 @@ def get_sigma_at_fraction(sigmas, step_fraction):
     return sigmas[idx].item()
 
 
-class AccurateDenoise:
+class ActualDenoise:
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -52,7 +52,7 @@ class AccurateDenoise:
         return (scheduler, denoise, model)
 
 
-class AccurateDenoiseStep:
+class ActualDenoiseStep:
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -80,7 +80,7 @@ class AccurateDenoiseStep:
         return (scheduler, start_at_step, steps, model)
 
 
-class AccurateDenoiseInverse:
+class ActualDenoiseInverse:
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -112,7 +112,7 @@ class AccurateDenoiseInverse:
         return (scheduler, actual_ratio, model)
 
 
-class AccurateDenoiseInverseStep:
+class ActualDenoiseInverseStep:
     @classmethod
     def INPUT_TYPES(cls):
         return {

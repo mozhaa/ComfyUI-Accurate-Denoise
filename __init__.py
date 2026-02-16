@@ -1,20 +1,20 @@
 from .nodes import (
-    AccurateDenoise,
-    AccurateDenoiseInverse,
-    AccurateDenoiseInverseStep,
-    AccurateDenoiseStep,
+    ActualDenoise,
+    ActualDenoiseInverse,
+    ActualDenoiseInverseStep,
+    ActualDenoiseStep,
 )
 
 NODE_CLASS_MAPPINGS = {
-    "AccurateDenoise": AccurateDenoise,
-    "AccurateDenoiseStep": AccurateDenoiseStep,
-    "AccurateDenoiseInverse": AccurateDenoiseInverse,
-    "AccurateDenoiseInverseStep": AccurateDenoiseInverseStep,
+    "ActualDenoise": ActualDenoise,
+    "ActualDenoiseStep": ActualDenoiseStep,
+    "ActualDenoiseInverse": ActualDenoiseInverse,
+    "ActualDenoiseInverseStep": ActualDenoiseInverseStep,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "AccurateDenoise": "Accurate Denoise",
-    "AccurateDenoiseStep": "Accurate Denoise (step)",
-    "AccurateDenoiseInverse": "Accurate Denoise Inverse",
-    "AccurateDenoiseInverseStep": "Accurate Denoise Inverse (step)",
+    "ActualDenoise": "Actual Denoise",
+    "ActualDenoiseStep": "Actual Denoise (step)",
+    "ActualDenoiseInverse": "Actual Denoise Inverse",
+    "ActualDenoiseInverseStep": "Actual Denoise Inverse (step)",
 }
