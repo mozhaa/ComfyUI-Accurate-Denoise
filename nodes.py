@@ -8,7 +8,7 @@ def get_sigma_index(model, scheduler, actual_denoise, total_sigma_steps=1000):
         return 0
 
     model_sampling = model.get_model_object("model_sampling")
-    sigmas = comfy.samplers.calculate_sigmas(
+    sigmas = comfy.samplerscalculate_sigmas(
         model_sampling, scheduler, total_sigma_steps
     ).cpu()
 
@@ -28,7 +28,7 @@ class AccurateDenoise:
         return {
             "required": {
                 "model": ("MODEL",),
-                "scheduler": (comfy.samplers.SCHEDULER_NAMES,),
+                "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
                 "actual_denoise": (
                     "FLOAT",
                     {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001},
@@ -36,7 +36,7 @@ class AccurateDenoise:
             }
         }
 
-    RETURN_TYPES = ("FLOAT", "STRING")
+    RETURN_TYPES = ("FLOAT", comfy.samplers.KSampler.SCHEDULERS)
     RETURN_NAMES = ("denoise", "scheduler")
     FUNCTION = "recompute"
     CATEGORY = "sampling/custom_sampling/schedulers"
@@ -57,7 +57,7 @@ class AccurateDenoiseStep:
         return {
             "required": {
                 "model": ("MODEL",),
-                "scheduler": (comfy.samplers.SCHEDULER_NAMES,),
+                "scheduler": (comfy.samplers.KSampler.SCHEDULERS,),
                 "actual_denoise": (
                     "FLOAT",
                     {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001},
@@ -66,7 +66,7 @@ class AccurateDenoiseStep:
             }
         }
 
-    RETURN_TYPES = ("INT", "INT", "STRING")
+    RETURN_TYPES = ("INT", "INT", comfy.samplers.KSampler.SCHEDULERS)
     RETURN_NAMES = ("start_at_step", "steps", "scheduler")
     FUNCTION = "recompute"
     CATEGORY = "sampling/custom_sampling/schedulers"
