@@ -17,7 +17,7 @@ class AccurateDenoise:
             }
         }
 
-    RETURN_TYPES = ("FLOAT",)
+    RETURN_TYPES = ("FLOAT", "SCHEDULER")
     FUNCTION = "recompute"
     CATEGORY = "sampling/custom_sampling/schedulers"
 
@@ -42,4 +42,4 @@ class AccurateDenoise:
 
         idx_val = idx[0, 0].item()
         recomputed_denoise = idx_val / total_sigma_steps
-        return (recomputed_denoise,)
+        return (recomputed_denoise, scheduler)
