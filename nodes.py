@@ -8,7 +8,7 @@ def get_sigma_index(model, scheduler, actual_denoise, total_sigma_steps=1000):
         return 0
 
     model_sampling = model.get_model_object("model_sampling")
-    sigmas = comfy.samplerscalculate_sigmas(
+    sigmas = comfy.samplers.calculate_sigmas(
         model_sampling, scheduler, total_sigma_steps
     ).cpu()
 
