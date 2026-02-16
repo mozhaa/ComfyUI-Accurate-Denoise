@@ -40,5 +40,5 @@ class AccurateDenoise:
             return (1.0,)
 
         idx_val = idx[0, 0].item()
-        recomputed_denoise = idx_val / total_sigma_steps
+        recomputed_denoise = 1 - idx_val / total_sigma_steps
         return (recomputed_denoise, scheduler)
