@@ -1,11 +1,10 @@
 import comfy.samplers
-import torch
 
 
-def get_sigma_index(model, scheduler, denoise, total_sigma_steps=1000):
-    if denoise <= 0.0:
+def get_sigma_index(model, scheduler, actual_denoise, total_sigma_steps=1000):
+    if actual_denoise <= 0.0:
         return total_sigma_steps
-    if denoise >= 1.0:
+    if actual_denoise >= 1.0:
         return 0
 
     model_sampling = model.get_model_object("model_sampling")
@@ -14,7 +13,7 @@ def get_sigma_index(model, scheduler, denoise, total_sigma_steps=1000):
     ).cpu()
 
     sigma0 = sigmas[0].item()
-    threshold = denoise * sigma0
+    threshold = actual_denoise * sigma0
 
     idx = (sigmas < threshold).nonzero()
     if len(idx) == 0:
@@ -30,26 +29,26 @@ class AccurateDenoise:
             "required": {
                 "model": ("MODEL",),
                 "scheduler": (comfy.samplers.SCHEDULER_NAMES,),
-                "denoise": (
+                "actual_denoise": (
                     "FLOAT",
                     {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001},
                 ),
             }
         }
 
-    RETURN_TYPES = ("FLOAT", "SCHEDULER")
+    RETURN_TYPES = ("FLOAT", "COMBO")
     RETURN_NAMES = ("denoise", "scheduler")
     FUNCTION = "recompute"
     CATEGORY = "sampling/custom_sampling/schedulers"
 
-    def recompute(self, model, scheduler, denoise):
+    def recompute(self, model, scheduler, actual_denoise):
         total_sigma_steps = 1000
-        idx = get_sigma_index(model, scheduler, denoise, total_sigma_steps)
+        idx = get_sigma_index(model, scheduler, actual_denoise, total_sigma_steps)
 
-        recomputed_denoise = 1.0 - (idx / total_sigma_steps)
+        denoise = 1.0 - (idx / total_sigma_steps)
 
-        recomputed_denoise = max(0.0, min(1.0, recomputed_denoise))
-        return (recomputed_denoise, scheduler)
+        denoise = max(0.0, min(1.0, denoise))
+        return (denoise, scheduler)
 
 
 class AccurateDenoiseStep:
@@ -59,7 +58,7 @@ class AccurateDenoiseStep:
             "required": {
                 "model": ("MODEL",),
                 "scheduler": (comfy.samplers.SCHEDULER_NAMES,),
-                "denoise": (
+                "actual_denoise": (
                     "FLOAT",
                     {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001},
                 ),
@@ -72,9 +71,9 @@ class AccurateDenoiseStep:
     FUNCTION = "recompute"
     CATEGORY = "sampling/custom_sampling/schedulers"
 
-    def recompute(self, model, scheduler, denoise, steps):
+    def recompute(self, model, scheduler, actual_denoise, steps):
         total_sigma_steps = 1000
-        idx = get_sigma_index(model, scheduler, denoise, total_sigma_steps)
+        idx = get_sigma_index(model, scheduler, actual_denoise, total_sigma_steps)
 
         start_at_step = int(round(idx * steps / total_sigma_steps))
 
